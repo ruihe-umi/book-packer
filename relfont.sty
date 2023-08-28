@@ -1,0 +1,60 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{relfont}[2023/08/27 欧文フォントをいいかんじにしたい]
+
+\RequirePackage{luatexja-fontspec}
+\RequirePackage{xparse}
+
+\providefontfamily\umi@relfont{DejaVu Serif}
+\ProvideDocumentCommand\umirelfont{}{\umi@relfont\selectfont}
+\ProvideDocumentCommand\umireltext{m}{{\umirelfont #1}}
+\NewDocumentCommand\setrelfont{mO{}}{%
+    \renewfontfamily\umi@relfont{#1}[#2]%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% plextのrensujiだと左右の行と揃わない問題
+%% okumacroから拝借
+%% なおsecdefしてないから星付きは意図しない挙動となる
+%% t系との互換性はない
+%%
+\NewDocumentCommand\umi@rensuji{m}{%
+    \jlreq@ifydir{%
+        \hbox{#1}}{%
+        \hskip\jlreqkanjiskip
+        \hbox to 1\zw{%
+            \yoko\hss\smash{#1}%
+            \hss\rule[-0.12\zw]{0\zw}{1\zw}%
+        }%
+        \hskip\jlreqkanjiskip}}
+%%
+%% \umitcy では横方向の倍率を設定できる
+%% オプション引数を省略した場合、1zwになるように計算される
+%%
+\newbox\umi@boxa
+\newbox\umi@boxb
+\ProvideDocumentCommand\umitcy{om}{%
+  \setbox\umi@boxa=\hbox{#2}%
+  \setbox\umi@boxb=\hbox{あ}%
+  \IfValueTF{#1}%
+    {\scalebox{1}[#1]{\umi@rensuji{\umireltext{#2}}}}%
+    {%
+    \scalebox{1}[%
+    \directlua{%
+    local x = \number\wd\umi@boxb / \number\wd\umi@boxa
+    tex.print(x)}%
+  ]{\umi@rensuji{\umireltext{#2}}}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% 欧文フォントもきれいに縦中横できます！
+%% そう、TeXならね。
+%%
+%% \umirel{ABC}とやると欧文書体でいい感じになる
+%%
+\def\umirel@end{\relax}
+\def\umirel@loop#1{\ifx #1\umirel@end\relax\else\umi@rensuji{\umireltext{#1}}\fi\noexpand\umirel@loop}
+\ProvideDocumentCommand\umirel{m}{\umirel@loop #1\umirel@end}
+%%%% \expandafter だとダメなんだけど、\noexpandならうまくいく
+%%%% どうもようわからない……chatcodeの関係なの？
+%%%% \futureletを使ってloopbに飛ばす……という方法が安全か？
+\endinput

@@ -1,0 +1,57 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bp-helper}[2023/08/27]
+
+\RequirePackage{tikz}
+\RequirePackage{xparse}
+
+\NewDocumentCommand{\ifleftpage}{mm}{\ifodd\value{page}\relax#1\else#2\fi}
+
+%%%
+%% ガイドラインの設定をよしなにするやつ
+%% 字数、行数、小口、天、地、ノド
+\def\bp@linelength{}
+\def\bp@number@of@lines{}
+\def\bp@edge@len{}
+\def\bp@top@len{}
+\def\bp@bottom@len{}
+\def\bp@gutter@len{}
+\usetikzlibrary{calc}
+\ProvideDocumentCommand\sethelperlength{mmmmmm}{%
+  \def\bp@linelength{#1}%
+  \def\bp@number@of@lines{#2}%
+  \def\bp@edge@len{#3}%
+  \def\bp@top@len{#4}%
+  \def\bp@bottom@len{#5}%
+  \def\bp@gutter@len{#6}%
+
+  \AtBeginShipout{\AtBeginShipoutAddToBox{%
+    \begin{tikzpicture}[yscale=-1,overlay]
+      \ifleftpage{\let\@left@margin\bp@edge@len\let\@right@margin\bp@gutter@len}{\let\@left@margin\bp@gutter@len\let\@right@margin\bp@edge@len}%
+      \node[anchor=north west,minimum width=\textwidth,minimum height=\textheight] (body) at(\@left@margin,\bp@top@len) {};
+      \node[anchor=north west,minimum width=\paperwidth,minimum height=\paperheight] (paper) at(0,0) {};
+
+      \tikzset{
+        guideline/.style={draw=cyan,line width=.12mm},
+        sizing/.style={text=cyan,fill=white,inner sep=.25mm,outer sep=.5\zw}}
+
+      \begin{scope}[shift={(body.north west)}]
+        \foreach \x in {1,2,...,\bp@number@of@lines} {
+          \foreach \y in {1,2,...,\bp@linelength} {
+            \draw[guideline] (\dimexpr\x\Cvs-1\Cvs\relax,\y\zw) rectangle ++(1\zw,-1\zw);
+          }
+        }
+      \end{scope}
+      \draw[guideline,magenta](paper.north west) rectangle (paper.south east);
+      \foreach \l/\c/\r/\length in {
+        north west/north/north east/\bp@top@len,
+        south west/south/south east/\bp@bottom@len,
+        north west/west/south west/\@left@margin,
+        north east/east/south east/\@right@margin
+      } {
+        \draw[guideline,<->]($(body.\l)!(paper.\c)!(body.\r)$)--(paper.\c) node[midway,sizing] {\length};
+      }
+    \end{tikzpicture}%
+  }}%
+}
+
+\endinput

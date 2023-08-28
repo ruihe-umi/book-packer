@@ -1,0 +1,60 @@
+%% 文字コードはUTF-8; LuaTeX用に改造した（ずい）
+% zrjapunct1.sty https://gist.github.com/hakuoku/188b761d7904016f7ab831ffc9f4d50a を見よ
+
+%% 前提パッケージ
+\RequirePackage{newunicodechar}
+\RequirePackage{graphics}
+
+%% 倍角ダーシを出力する
+%% \umidash{数値} で（数値）倍の長さのダッシュを出力できる
+\chardef\umi@J@horizbar="2015
+\newunicodechar{―}{\@tempcnta\@ne\umi@do@emdash}
+\DeclareRobustCommand*{\umi@do@emdash}{% 保護付
+  \@ifnextchar ―{\umi@do@doubledash}{\umi@J@horizbar}}
+\DeclareRobustCommand*{\umi@do@doubledash}[1]{%
+  \advance\@tempcnta by\@ne
+  \@ifnextchar ―{\umi@do@doubledash}%
+                 {\umidash{\number\@tempcnta}}}
+\newcommand{\umidash}[1]{%
+  \scalebox{#1}[1]{\umi@J@horizbar}}
+
+\chardef\umi@J@horizontalellipsis="2026 %<…>HORIZONTAL ELLIPSIS / 三点リーダ
+\chardef\umi@j@vhorizontalellipsis="FE19 %<︙>PRESENTATION FORM FOR VERTICAL HORIZONTAL ELLIPSIS / 三点リーダ
+\chardef\umi@J@dblexclam="203C %<‼>DOUBLE EXCLAMATION MARK / 感嘆符二つ
+\chardef\umi@J@dblquest="2047 %<⁇>DOUBLE QUESTION MARK / 疑問符二つ
+\chardef\umi@J@questexclam="2048 %<⁈>QUESTION EXCLAMATION MARK / 疑問符感嘆符
+\chardef\umi@J@exclamquest="2049 %<⁉>EXCLAMATION QUESTION MARK / 感嘆符疑問符
+\chardef\umi@J@exclam="FF01
+\chardef\umi@J@quest="FF1F
+\newunicodechar{！}{\umi@J@exclam\umi@sp}
+\newunicodechar{？}{\umi@J@quest\umi@sp}
+% ‼(U+203C)は和文の区切り符号
+\newunicodechar{‼}{\umi@J@dblexclam\umi@sp}
+% ⁇(U+2047)は和文の区切り符号
+\newunicodechar{⁇}{\umi@J@dblquest\umi@sp}
+% ⁈(U+2048)は和文の区切り符号
+\newunicodechar{⁈}{\umi@J@questexclam\umi@sp}
+% ⁉(U+2049)は和文の区切り符号
+\newunicodechar{⁉}{\umi@J@exclamquest\umi@sp}
+
+%% \umi@sp
+% 直後が閉じ括弧でないなら全角空白を出力する。
+% ！*のようにスター付きにすることで空白の挿入を抑止できる
+\DeclareRobustCommand*{\umi@sp}{\@ifstar{}{\umi@spp}}
+\DeclareRobustCommand*{\umi@spp}{% 保護付にする
+  \@ifnextchar ）{}{%
+    \@ifnextchar 」{}{%
+      \@ifnextchar 』{}{%20191102ずい
+        \@ifnextchar ‼{}{%こっから後のびっくり系
+          \@ifnextchar ⁉{}{%20200109
+            \@ifnextchar ！{}{%
+              \@ifnextchar ？{}{%
+                \@ifnextchar ］{}{%
+                  \@ifnextchar ―{}{\hskip1\zw\relax}}}}}}}}}}
+
+%% ３点リーダの向きを直す
+%% むしろいままでどこで直ってたの？
+\newunicodechar{…}{\umi@j@vhorizontalellipsis}
+%--------------------------------------- おしまい
+\endinput
+%% EOF
