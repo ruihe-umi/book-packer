@@ -1,7 +1,9 @@
-\documentclass{b6book}
+\documentclass[b6,trimmarks]{bookpackers}
 \usepackage{bp-helper}
 \sethelperlength{43}{18}{15mm}{21.125mm}{21.125mm}{16.25mm}
 \begin{document}
+line length is \number\numexpr\textwidth/\zw\relax\par
+number of lines is \the\numexpr\textheight/\Cvs\relax\par
 \subfile{test}
 
 \end{document}

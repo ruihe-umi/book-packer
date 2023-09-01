@@ -1,6 +1,8 @@
-\documentclass{a6book}
+\documentclass[trimmarks]{bookpackers}
 \usepackage{bp-helper}
 \sethelperlength{39}{16}{10mm}{17mm}{14mm}{17mm}
 \begin{document}
+line length is \number\numexpr\textwidth/\zw\relax\par
+number of lines is \the\numexpr\textheight/\Cvs\relax\par
 \input{test}
 \end{document}
