@@ -4,11 +4,11 @@
 \RequirePackage{luatexja-fontspec}
 \RequirePackage{xparse}
 
-\providefontfamily\umi@relfont{DejaVu Serif}
-\ProvideDocumentCommand\umirelfont{}{\umi@relfont\selectfont}
+\ProvideDocumentCommand\umirelfont{}{\rmfamily}
 \ProvideDocumentCommand\umireltext{m}{{\umirelfont #1}}
 \NewDocumentCommand\setrelfont{mO{}}{%
-    \renewfontfamily\umi@relfont{#1}[#2]%
+  \setfontfamily\umi@relfont{#1}[#2]%
+  \RenewDocumentCommand{\umirelfont}{\umi@relfont\selectfont}%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
