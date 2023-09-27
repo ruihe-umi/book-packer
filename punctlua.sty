@@ -54,7 +54,7 @@
 
 %% ３点リーダの向きを直す
 %% むしろいままでどこで直ってたの？
-\newunicodechar{…}{\umi@j@vhorizontalellipsis}
+\newunicodechar{…}{\ifnum\ltjgetparameter{direction}=4\umi@J@horizontalellipsis\else\umi@j@vhorizontalellipsis\fi}
 %--------------------------------------- おしまい
 \endinput
 %% EOF
